@@ -46,7 +46,7 @@ jobs:
   # If you want to modify CI jobs, take a look at src/ci/github-actions/jobs.yml.
   calculate_matrix:
     name: Calculate job matrix
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-22.04 # Using a more established LTS version for stability
     outputs:
       jobs: ${{ steps.jobs.outputs.jobs }}
       run_type: ${{ steps.jobs.outputs.run_type }}
@@ -172,9 +172,6 @@ jobs:
 
       - name: install WIX
         run: src/ci/scripts/install-wix.sh
-
-      - name: disable git crlf conversion
-        run: src/ci/scripts/disable-git-crlf-conversion.sh
 
       - name: checkout submodules
         run: src/ci/scripts/checkout-submodules.sh
@@ -303,7 +300,7 @@ jobs:
   # when a workflow is successful listening to webhooks only in our current bors implementation (homu).
   outcome:
     name: bors build finished
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04 # Using a more established LTS version for stability
     needs: [ calculate_matrix, job ]
     # !cancelled() executes the job regardless of whether the previous jobs passed or failed
     if: ${{ !cancelled() && contains(fromJSON('["auto", "try"]'), needs.calculate_matrix.outputs.run_type) }}
@@ -324,4 +321,4 @@ jobs:
         if: needs.calculate_matrix.outputs.run_type == 'auto'
         env:
           TOOLSTATE_ISSUES_API_URL: https://api.github.com/repos/rust-lang/rust/issues
-          TOOLSTATE_PUBLISH: 1
+       TOOLSTATE_PUBLISH: 1
